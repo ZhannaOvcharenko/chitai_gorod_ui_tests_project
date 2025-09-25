@@ -1,0 +1,1 @@
+# chitai_gorod_ui_tests_project
