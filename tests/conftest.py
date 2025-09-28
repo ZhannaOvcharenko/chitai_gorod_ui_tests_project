@@ -1,50 +1,62 @@
 import pytest
-import requests
-import allure
+import os
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-
-from config.settings import BASE_URL
+from selenium.webdriver.chrome.options import Options
+from selene.support.shared import browser
 from utils import attach
+from dotenv import load_dotenv
+from pages.main_page import MainPage
+
+load_dotenv()
 
 
-@pytest.fixture(scope="function")
-def browser():
-    """Инициализация браузера для каждого теста с разворачиванием на полный экран."""
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    driver.maximize_window()
-    yield driver
+@pytest.fixture(scope='function', autouse=True)
+def setup_browser():
+    """Фикстура для настройки браузера и подключения к Selenoid"""
+    selenoid_login = os.getenv("SELENOID_LOGIN")
+    selenoid_pass = os.getenv("SELENOID_PASS")
+    selenoid_url = os.getenv("SELENOID_URL")
 
-    try:
-        attach.add_screenshot(driver)
-        attach.add_html(driver)
-        attach.add_logs(driver)
-        attach.add_video(driver)
-    except Exception as e:
-        allure.attach(str(e), name="attach_error", attachment_type=allure.attachment_type.TEXT)
+    if not all([selenoid_login, selenoid_pass, selenoid_url]):
+        raise ValueError(
+            "Ошибка: переменные SELENOID_LOGIN, SELENOID_PASS или SELENOID_URL не заданы."
+        )
 
-    driver.quit()
-
-
-@pytest.fixture
-def headers():
-    """Фикстура для заголовков с токеном авторизации."""
-    token = get_token_from_api()
-    return {
-        'accept': 'application/json, text/plain, */*',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-        'Referer': BASE_URL,
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}'
+    options = Options()
+    selenoid_capabilities = {
+        "browserName": "chrome",
+        "browserVersion": "128.0",
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True
+        }
     }
+    options.capabilities.update(selenoid_capabilities)
+
+    driver = webdriver.Remote(
+        command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
+        options=options
+    )
+
+    browser.config.driver = driver
+    browser.config.base_url = "https://www.chitai-gorod.ru"
+    browser.driver.maximize_window()
+    browser.config.timeout = 10
+
+    yield
+
+    # Allure attachments
+    attach.add_screenshot(browser)
+    attach.add_logs(browser)
+    attach.add_html(browser)
+    attach.add_video(browser)
+
+    browser.quit()
 
 
-def get_token_from_api():
-    """Получение токена доступа из cookies API."""
-    response = requests.get(BASE_URL)
-    cookies = response.cookies
-    token = cookies.get('access-token')
-    if token:
-        return token[9:]
-    raise ValueError("Не удалось получить токен доступа")
+@pytest.fixture()
+def open_main_page():
+    """Фикстура для открытия главной страницы"""
+    page = MainPage()
+    page.open_main_page().accept_cookies_if_present()
+    return page

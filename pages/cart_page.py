@@ -1,21 +1,24 @@
-from selene import have
-from selene.support.shared import browser
+from selene import browser
 
 
 class CartPage:
 
     def open(self):
+        """Открывает страницу корзины"""
         browser.open("/cart")
         return self
 
-    def should_contain_book(self, title: str):
-        browser.all("[data-testid='cart-item-title']").first.should(have.text(title))
+    def should_contain_book(self, book_title: str):
+        """Проверяет, что корзина содержит книгу"""
+        browser.element(".cart-item__title").should_have_text(book_title)
         return self
 
     def remove_book(self):
-        browser.element("[data-testid='cart-item-remove']").click()
+        """Удаляет первую книгу из корзины"""
+        browser.element("button.cart-item__delete-button").click()
         return self
 
     def should_be_empty(self):
-        browser.element("[data-testid='cart-empty-title']").should(have.text("Корзина пуста"))
+        """Проверяет, что корзина пуста"""
+        browser.element(".cart-empty__title").should_be_visible()
         return self

@@ -1,17 +1,14 @@
-from selene import have
-from selene.support.shared import browser
+from selene import browser
 
 
 class BookPage:
 
     def open(self, book_url: str):
-        browser.open(book_url)
-        return self
-
-    def should_have_title(self, title: str):
-        browser.element("h1").should(have.text(title))
+        """Открывает страницу книги по относительному URL"""
+        browser.open(f"/{book_url}")
         return self
 
     def add_to_cart(self):
-        browser.element("[data-testid='button-cart']").click()
+        """Добавляет книгу в корзину"""
+        browser.element("button.chg-app-button--primary").click()
         return self
