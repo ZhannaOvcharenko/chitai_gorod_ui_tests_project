@@ -1,16 +1,13 @@
-from selene import browser
+from selene import browser, be
 
 
 class MainPage:
-
     def open_main_page(self):
-        """Открывает главную страницу сайта"""
-        browser.open("/")
+        browser.open("https://www.chitai-gorod.ru/")
         return self
 
     def accept_cookies_if_present(self):
-        """Принимает куки, если есть баннер"""
-        cookie_btn = browser.element("[data-testid='accept-cookies']")
-        if cookie_btn.is_displayed():
-            cookie_btn.click()
+        cookie_btns = browser.all("[data-testid='accept-cookies']")
+        if cookie_btns.filter(be.visible).count() > 0:
+            cookie_btns.first.click()
         return self

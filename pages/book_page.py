@@ -1,14 +1,13 @@
-from selene import browser
+from selene import browser, be
 
 
 class BookPage:
-
-    def open(self, book_url: str):
-        """Открывает страницу книги по относительному URL"""
-        browser.open(f"/{book_url}")
+    def open(self, url):
+        browser.open(f"https://www.chitai-gorod.ru/{url}")
         return self
 
     def add_to_cart(self):
-        """Добавляет книгу в корзину"""
-        browser.element("button.chg-app-button--primary").click()
+        add_button = browser.all("button.chg-app-button--primary").filter(be.visible)
+        if add_button.count() > 0:
+            add_button.first.click()
         return self
