@@ -12,7 +12,7 @@ load_dotenv()
 
 @pytest.fixture(scope='function', autouse=True)
 def setup_browser():
-    """Фикстура для настройки браузера и подключения к Selenoid"""
+
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
@@ -23,35 +23,35 @@ def setup_browser():
         )
 
     options = Options()
-    selenoid_capabilities = {
-        "browserName": "chrome",
-        "browserVersion": "128.0",
-        "selenoid:options": {
-            "enableVNC": True,
-            "enableVideo": True
-        }
-    }
-    options.capabilities.update(selenoid_capabilities)
+
+    options.set_capability("browserName", "chrome")
+    options.set_capability("browserVersion", os.getenv("BROWSER_VERSION", "128.0"))
+    options.set_capability("selenoid:options", {
+        "enableVNC": True,
+        "enableVideo": True
+    })
 
     driver = webdriver.Remote(
         command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
         options=options
     )
 
-    browser.config.driver = driver
-    browser.config.base_url = "https://www.chitai-gorod.ru"
-    browser.driver.maximize_window()
+    browser.driver = driver
+    browser.config.base_url = os.getenv("BASE_URL", "https://www.chitai-gorod.ru")
+    browser.config.window_width = int(os.getenv("WIDTH", 1920))
+    browser.config.window_height = int(os.getenv("HEIGHT", 1080))
     browser.config.timeout = 10
 
     yield
 
     # Allure attachments
-    attach.add_screenshot(browser)
-    attach.add_logs(browser)
-    attach.add_html(browser)
-    attach.add_video(browser)
-
-    browser.quit()
+    try:
+        attach.add_screenshot(browser)
+        attach.add_logs(browser)
+        attach.add_html(browser)
+        attach.add_video(browser)
+    finally:
+        browser.quit()
 
 
 @pytest.fixture()
