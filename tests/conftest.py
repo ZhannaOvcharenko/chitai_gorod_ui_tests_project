@@ -1,5 +1,7 @@
 import pytest
 import os
+
+from selene import be
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selene.support.shared import browser
@@ -12,7 +14,6 @@ load_dotenv()
 
 @pytest.fixture(scope='function', autouse=True)
 def setup_browser():
-
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
@@ -36,7 +37,7 @@ def setup_browser():
         options=options
     )
 
-    browser.driver = driver
+    browser.config.driver = driver
     browser.config.base_url = os.getenv("BASE_URL", "https://www.chitai-gorod.ru")
     browser.config.window_width = int(os.getenv("WIDTH", 1920))
     browser.config.window_height = int(os.getenv("HEIGHT", 1080))
@@ -58,5 +59,11 @@ def setup_browser():
 def open_main_page():
     """Фикстура для открытия главной страницы"""
     page = MainPage()
-    page.open_main_page().accept_cookies_if_present()
+    page.open_main_page()
+
+    # Закрываем диалог с куки, если он есть
+    cookie_buttons = browser.all("[data-testid='accept-cookies']").by(be.visible)
+    if len(cookie_buttons) > 0:
+        cookie_buttons[0].click()
+
     return page

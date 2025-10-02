@@ -1,14 +1,12 @@
 import allure
-from selene import browser, be
+import pytest
+from pages.search_page import SearchPage
 
 
-@allure.epic("UI Читай-Город")
-@allure.feature("Поиск")
+@pytest.mark.usefixtures("open_main_page")
 class TestSearch:
 
-    @allure.story("Поиск существующей книги")
+    @allure.story("Поиск книги по названию")
     @allure.severity(allure.severity_level.CRITICAL)
     def test_search_book(self):
-        browser.open("https://www.chitai-gorod.ru/")
-        browser.element("input[type='search']").type("Дюна").press_enter()
-        browser.element("div.product-card").should(be.visible)
+        SearchPage().search_book("Дюна").should_contain_book("Дюна")

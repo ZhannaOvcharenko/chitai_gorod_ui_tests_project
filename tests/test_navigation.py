@@ -1,9 +1,9 @@
 import allure
+import pytest
 from pages.catalog_page import CatalogPage
 
 
-@allure.epic("UI Читай-Город")
-@allure.feature("Навигация")
+@pytest.mark.usefixtures("open_main_page")
 class TestNavigation:
 
     @allure.story("Переход в раздел 'Книги'")
