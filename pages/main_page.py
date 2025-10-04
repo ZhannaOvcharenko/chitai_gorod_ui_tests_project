@@ -8,7 +8,7 @@ class MainPage:
         return self
 
     def accept_cookies_if_present(self):
-        cookie_btns = browser.all("[data-testid='accept-cookies']").by(be.visible)
-        if len(cookie_btns) > 0:
-            cookie_btns.first.click()
+        cookie_btn = browser.element('[data-testid="accept-cookies"]')
+        if cookie_btn.matching(be.visible):
+            cookie_btn.click()
         return self
