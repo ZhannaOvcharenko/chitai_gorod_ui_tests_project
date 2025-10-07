@@ -13,9 +13,8 @@ class SearchPage:
     def search_book(self, query: str):
         selectors = [
             'input[type="search"]',
-            'input[placeholder*="найти"]',
-            'input[class*="search__input"]',
-            'input[class*="header-search"]',
+            'input[placeholder*="Что будем искать?"]',
+            'input[class*="search-form__input search-form__input--search"]',
             'input[data-testid*="search"]',
         ]
         for sel in selectors:

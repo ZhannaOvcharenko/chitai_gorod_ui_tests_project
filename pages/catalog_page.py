@@ -14,9 +14,7 @@ class CatalogPage:
         selectors = [
             'button[data-testid*="catalog"]',
             'button[aria-label*="Каталог"]',
-            'button[class*="header__catalog"]',
-            'button[class*="catalog-button"]',
-            'button[class*="header__menu"]',
+            'button[class*="chg-app-button__content"]',
             'button:has-text("Каталог")',
         ]
         for sel in selectors:
