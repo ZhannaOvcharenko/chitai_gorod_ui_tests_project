@@ -12,20 +12,22 @@ class CatalogPage:
     @allure.step("Открыть каталог")
     def open_catalog(self):
         selectors = [
-            'button[aria-label="Каталог товаров"]',
-            'button[aria-label*="Каталог"]',
+            'button.catalog-btn',
+            'button.header-sticky__catalog-menu',
             'button:has-text("Каталог")',
-            'button.header__button',
         ]
         for sel in selectors:
             try:
                 elem = browser.element(sel)
-                elem.should(be.visible).click()
-                return self
+                if elem.matching(be.visible):
+                    elem.click()
+                    return self
             except (NoSuchElementException, ElementNotInteractableException, TimeoutException):
                 continue
 
-        raise AssertionError("Не удалось открыть каталог — обновите селекторы в CatalogPage.open_catalog()")
+        raise AssertionError(
+            "Не удалось открыть каталог — проверьте селекторы в CatalogPage.open_catalog()"
+        )
 
     @allure.step("Открыть раздел 'Книги'")
     def open_books(self):
