@@ -3,6 +3,9 @@ import pytest
 from pages.search_page import SearchPage
 
 
+@allure.epic("UI Tests")
+@allure.feature("Поиск товаров")
+@pytest.mark.ui
 @pytest.mark.usefixtures("open_main_page")
 class TestSearch:
 
