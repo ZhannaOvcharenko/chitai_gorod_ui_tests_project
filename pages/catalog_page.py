@@ -1,42 +1,28 @@
 import allure
-from selene import be, browser
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    ElementNotInteractableException,
-    TimeoutException,
-)
+from selene import browser, be
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, TimeoutException
 
 
 class CatalogPage:
 
     @allure.step("Открыть каталог")
     def open_catalog(self):
-        selectors = [
-            'button.catalog-btn',
-            'button.header-sticky__catalog-menu',
-            'button:has-text("Каталог")',
-        ]
-        for sel in selectors:
-            try:
-                elem = browser.element(sel)
-                if elem.matching(be.visible):
-                    elem.click()
-                    return self
-            except (NoSuchElementException, ElementNotInteractableException, TimeoutException):
-                continue
+        try:
+            browser.element('button.catalog-btn.header-sticky__catalog-menu').should(be.visible).click()
+            return self
+        except (NoSuchElementException, ElementNotInteractableException, TimeoutException):
+            raise AssertionError(
+                "Не удалось открыть каталог — проверьте селектор кнопки каталога"
+            )
 
-        raise AssertionError(
-            "Не удалось открыть каталог — проверьте селекторы в CatalogPage.open_catalog()"
-        )
-
-    @allure.step("Открыть раздел 'Книги'")
+    @allure.step("Перейти в раздел 'Книги'")
     def open_books(self):
         self.open_catalog()
-        browser.element('a[href*="/catalog/books"]').should(be.visible).click()
+        browser.element('a[href*="books"]').should(be.visible).click()
         return self
 
-    @allure.step("Открыть раздел 'Игры и игрушки'")
+    @allure.step("Перейти в раздел 'Игры и игрушки'")
     def open_games(self):
         self.open_catalog()
-        browser.element('a[href*="/catalog/games"]').should(be.visible).click()
+        browser.element('a[href*="games"]').should(be.visible).click()
         return self
