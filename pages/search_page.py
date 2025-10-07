@@ -1,7 +1,10 @@
 import allure
-from selene import browser, be, have
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
-from selene.core.exceptions import TimeoutException
+from selene import be, browser
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    ElementNotInteractableException,
+    TimeoutException,
+)
 
 
 class SearchPage:
@@ -11,9 +14,9 @@ class SearchPage:
         selectors = [
             'input[type="search"]',
             'input[placeholder*="найти"]',
-            'input.search-form__input',
-            'input[class*="search"]',
-            'input[data-testid*="search"]'
+            'input[class*="search__input"]',
+            'input[class*="header-search"]',
+            'input[data-testid*="search"]',
         ]
         for sel in selectors:
             try:
@@ -24,10 +27,9 @@ class SearchPage:
             except (NoSuchElementException, ElementNotInteractableException, TimeoutException):
                 continue
 
-        raise AssertionError("Поле поиска не найдено — обновите селектор в pages/search_page.py")
+        raise AssertionError(" Поле поиска не найдено — обновите селектор в SearchPage.search_book()")
 
-    @allure.step("Проверить, что результаты поиска содержат '{title}'")
-    def should_contain_book(self, title: str):
-        browser.all('.product-card__title, .product-title, .product-card__name, .product-card__title a') \
-            .filtered_by(have.text(title)).first.should(be.visible)
+    @allure.step("Проверка, что в результатах поиска есть книга '{expected_title}'")
+    def should_contain_book(self, expected_title: str):
+        browser.element(f'[title*="{expected_title}"]').should(be.visible)
         return self
