@@ -1,28 +1,16 @@
-import allure
-from selene import browser, be
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, TimeoutException
+from selene import browser, be, have
 
 
 class CatalogPage:
+    def open_catalog(self):  # noqa: R0201
+        browser.element('[data-testid="header-catalog-button"]').should(be.clickable).click()
 
-    @allure.step("Открыть каталог")
-    def open_catalog(self):
-        try:
-            browser.element('button.catalog-btn.header-sticky__catalog-menu').should(be.visible).click()
-            return self
-        except (NoSuchElementException, ElementNotInteractableException, TimeoutException):
-            raise AssertionError(
-                "Не удалось открыть каталог — проверьте селектор кнопки каталога"
-            )
-
-    @allure.step("Перейти в раздел 'Книги'")
     def open_books(self):
         self.open_catalog()
-        browser.element('a[href*="books"]').should(be.visible).click()
-        return self
+        browser.element('[href="/catalog/books-18000"]').should(be.clickable).click()
+        browser.should(have.url_containing("/catalog/books-18000"))
 
-    @allure.step("Перейти в раздел 'Игры и игрушки'")
     def open_games(self):
         self.open_catalog()
-        browser.element('a[href*="games"]').should(be.visible).click()
-        return self
+        browser.element('[href="/catalog/igrushki-i-igry-2824"]').should(be.clickable).click()
+        browser.should(have.url_containing("/catalog/igrushki-i-igry-2824"))

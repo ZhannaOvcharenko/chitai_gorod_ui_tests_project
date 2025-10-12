@@ -1,11 +1,12 @@
-import pytest
 import os
-from selene import be
+import pytest
+from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selene import be
 from selene.support.shared import browser
+from selene.core import config  # noqa: F401
 from utils import attach
-from dotenv import load_dotenv
 from pages.main_page import MainPage
 
 load_dotenv()
@@ -13,6 +14,8 @@ load_dotenv()
 
 @pytest.fixture(scope='function', autouse=True)
 def setup_browser():
+    """Настройка и запуск браузера перед каждым тестом."""
+
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
@@ -25,7 +28,6 @@ def setup_browser():
     if os.getenv("HEADLESS", "false").lower() in ("1", "true", "yes"):
         options.add_argument("--headless=new")
 
-    # Установка общих capabilities
     options.set_capability("browserName", "chrome")
     options.set_capability("browserVersion", os.getenv("BROWSER_VERSION", "128.0"))
     options.set_capability("selenoid:options", {
@@ -58,6 +60,7 @@ def setup_browser():
 
 @pytest.fixture()
 def open_main_page():
+    """Открывает главную страницу и принимает cookies, если нужно."""
     page = MainPage()
     page.open_main_page()
 
