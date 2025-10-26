@@ -2,15 +2,18 @@ from selene import browser, be, have
 
 
 class CatalogPage:
-    def open_catalog(self):  # noqa: R0201
+    def open_catalog(self):
         browser.element('[data-testid="header-catalog-button"]').should(be.clickable).click()
+        return self
 
     def open_books(self):
         self.open_catalog()
-        browser.element('[href="/catalog/books-18000"]').should(be.clickable).click()
-        browser.should(have.url_containing("/catalog/books-18000"))
+        browser.element('[href="product/dzheyn-eyr-2544490"]').should(be.clickable).click()
+        browser.should(have.url_containing("dzheyn-eyr-2544490"))
+        return self
 
     def open_games(self):
         self.open_catalog()
-        browser.element('[href="/catalog/igrushki-i-igry-2824"]').should(be.clickable).click()
-        browser.should(have.url_containing("/catalog/igrushki-i-igry-2824"))
+        browser.element('[href="product/nastolnaya-igra-gemenot-misterium-1006-2578863"]').should(be.clickable).click()
+        browser.should(have.url_containing("nastolnaya-igra-gemenot-misterium-1006-2578863"))
+        return self
