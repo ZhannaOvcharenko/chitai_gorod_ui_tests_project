@@ -45,7 +45,6 @@ def setup_browser():
         except WebDriverException as e:
             print(f"Не удалось добавить артефакт {attach_func.__name__}: {e}")
 
-    # Видео только для Selenoid
     if selenoid_url:
         try:
             attach.add_video(browser)
