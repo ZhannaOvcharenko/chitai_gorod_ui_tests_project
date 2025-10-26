@@ -12,7 +12,6 @@ load_dotenv()
 
 @pytest.fixture(scope='function', autouse=True)
 def setup_browser():
-
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
@@ -39,18 +38,25 @@ def setup_browser():
 
     yield browser
 
-    for attach_func in (attach.add_screenshot, attach.add_logs, attach.add_video):
+    # Добавляем артефакты
+    for attach_func in (attach.add_screenshot, attach.add_logs):
         try:
             attach_func(browser)
         except WebDriverException as e:
             print(f"Не удалось добавить артефакт {attach_func.__name__}: {e}")
+
+    # Видео только для Selenoid
+    if selenoid_url:
+        try:
+            attach.add_video(browser)
+        except WebDriverException as e:
+            print(f"Не удалось добавить видео: {e}")
 
     browser.quit()
 
 
 @pytest.fixture()
 def open_main_page(setup_browser):
-
     from pages.main_page import MainPage
 
     main_page = MainPage()
@@ -58,7 +64,6 @@ def open_main_page(setup_browser):
     try:
         main_page.accept_cookies_if_present()
     except AttributeError:
-        # Если метод или кнопка отсутствует, просто продолжаем
         pass
 
     return main_page

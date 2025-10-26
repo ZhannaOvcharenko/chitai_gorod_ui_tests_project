@@ -4,10 +4,9 @@ from selene import browser
 from pages.search_page import SearchPage
 
 
+@pytest.mark.usefixtures("open_main_page")
 @allure.epic("UI Tests")
 @allure.feature("Поиск товаров")
-@pytest.mark.ui
-@pytest.mark.usefixtures("open_main_page")
 class TestSearch:
 
     @allure.story("Поиск книги по названию")
